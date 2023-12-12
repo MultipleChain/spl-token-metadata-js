@@ -1,0 +1,45 @@
+{
+  "namespace": "multiplechain",
+  "name": "@multiplechain/spl-token-metadata",
+  "version": "0.1.0",
+  "description": "Create or update metadata for spl tokens with metaplex standarts.",
+  "scripts": {
+    "build": "webpack",
+    "push": "webpack && npm publish"
+  },
+  "files": [
+    "src",
+    "dist"
+  ],
+  "main": "dist/spl-token-metadata.js",
+  "types": "index.d.ts",
+  "typings": "index.d.ts",
+  "prepublishOnly": "npm run build",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MultipleChain/spl-token-metadata-js.git"
+  },
+  "keywords": [
+    "Solana",
+    "crypto",
+    "payment",
+    "Spl token",
+    "metadata"
+  ],
+  "author": "MultipleChain",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MultipleChain/spl-token-metadata-js/issues"
+  },
+  "homepage": "https://github.com/MultipleChain/spl-token-metadata-js",
+  "dependencies": {
+    "@metaplex-foundation/mpl-token-metadata": "^3.1.1",
+    "@metaplex-foundation/umi-bundle-defaults": "^0.8.10",
+    "@metaplex-foundation/umi-web3js-adapters": "^0.8.10",
+    "@solana/web3.js": "^1.78.5"
+  },
+  "devDependencies": {
+    "webpack": "^5.76.3",
+    "webpack-cli": "^5.0.1"
+  }
+}
