@@ -1,5 +1,5 @@
+const { clusterApiUrl, PublicKey } = require('@solana/web3.js');
 const { createUmi } = require('@metaplex-foundation/umi-bundle-defaults');
-const { clusterApiUrl, PublicKey, Transaction } = require('@solana/web3.js');
 const { fromWeb3JsPublicKey, toWeb3JsPublicKey } = require('@metaplex-foundation/umi-web3js-adapters');
 const { createMetadataAccountV3, updateMetadataAccountV2 } = require('@metaplex-foundation/mpl-token-metadata');
 
@@ -151,26 +151,21 @@ class SplTokenMetaData {
      * @param {String} from 
      * @param {String} tokenAddress 
      * @param {Object} metaData 
-     * @returns {Transaction}
+     * @returns {Object}
      */
     createSplTokenMetadata(from, tokenAddress, metaData) {
-        const args = this.preapreArgs(from, tokenAddress, metaData);
-        const metadataBuilder = createMetadataAccountV3(this.umi, args);
-        return new Transaction().add(this.txInstructionCreator(metadataBuilder));
+        return this.txInstructionCreator(createMetadataAccountV3(this.umi, this.preapreArgs(from, tokenAddress, metaData)));
     }
 
     /**
      * @param {String} from 
      * @param {String} tokenAddress 
      * @param {Object} metaData 
-     * @returns {Transaction}
+     * @returns {Object}
      */
     updateSplTokenMetadata(from, tokenAddress, metaData) {
-        const args = this.preapreArgs(from, tokenAddress, metaData);
-        const metadataBuilder = updateMetadataAccountV2(this.umi, args);
-        return new Transaction().add(this.txInstructionCreator(metadataBuilder));
+        return this.txInstructionCreator(updateMetadataAccountV2(this.umi, this.preapreArgs(from, tokenAddress, metaData)));
     }
-
 }
 
 module.exports = SplTokenMetaData;
