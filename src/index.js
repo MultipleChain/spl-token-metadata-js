@@ -21,24 +21,24 @@ class SplTokenMetaData {
     }
 
     /**
-     * @param {Object} metaData 
+     * @param {Object} metadata 
      * @return {Boolean}
      * @throws {Error}
      */
-    async validateTokenMetaData(metaData) {
-        if (!metaData.symbol) {
+    async validateTokenMetadata(metadata) {
+        if (!metadata.symbol) {
             throw new Error("Token symbol required!");
         }
 
-        if (!metaData.name) {
+        if (!metadata.name) {
             throw new Error("Token name require!");
         }
 
-        if (!metaData.uri) {
+        if (!metadata.uri) {
             throw new Error("Token uri required!");
         }
 
-        let jsonData = await fetch(metaData.uri)
+        let jsonData = await fetch(metadata.uri)
         .then(response => response.json())
         .catch((error) => {
             console.log(error)
@@ -53,11 +53,11 @@ class SplTokenMetaData {
             throw new Error("Token description required!");
         }
 
-        if (!jsonData.name || jsonData.name != metaData.name) {
+        if (!jsonData.name || jsonData.name != metadata.name) {
             throw new Error("Token name not same with uri!");
         }
 
-        if (!jsonData.symbol || jsonData.symbol != metaData.symbol) {
+        if (!jsonData.symbol || jsonData.symbol != metadata.symbol) {
             throw new Error("Token symbol not same with uri!");
         }
 
@@ -67,19 +67,19 @@ class SplTokenMetaData {
     /**
      * @param {String} from 
      * @param {String} tokenAddress 
-     * @param {Object} metaData 
+     * @param {Object} metadata 
      * @returns {Object}
      */
-    preapreArgs(from, tokenAddress, metaData) {
-        this.validateTokenMetaData(metaData);
+    async preapreArgs(from, tokenAddress, metadata) {
+        await this.validateTokenMetadata(metadata);
 
         const fromPublicKey = fromWeb3JsPublicKey(new PublicKey(from));
         
         const args = {
             data: {
-                name: metaData.name,
-                symbol: metaData.symbol,
-                uri: metaData.uri,
+                name: metadata.name,
+                symbol: metadata.symbol,
+                uri: metadata.uri,
                 sellerFeeBasisPoints: 0,
                 collection: null,
                 creators: [
@@ -115,14 +115,14 @@ class SplTokenMetaData {
         }
 
         const mint = new PublicKey(tokenAddress);
-        const [metadata] = PublicKey.findProgramAddressSync([
+        const [metadataPublicKey] = PublicKey.findProgramAddressSync([
             Buffer.from("metadata"),
             this.mplProgramId.toBytes(),
             mint.toBytes()
         ], this.mplProgramId);
 
         const accounts = {
-            metadata: fromWeb3JsPublicKey(metadata),
+            metadata: fromWeb3JsPublicKey(metadataPublicKey),
             mint: fromWeb3JsPublicKey(mint), 
             payer: signer,
             mintAuthority: signer,
@@ -150,21 +150,23 @@ class SplTokenMetaData {
     /**
      * @param {String} from 
      * @param {String} tokenAddress 
-     * @param {Object} metaData 
+     * @param {Object} metadata 
      * @returns {Object}
      */
-    createSplTokenMetadata(from, tokenAddress, metaData) {
-        return this.txInstructionCreator(createMetadataAccountV3(this.umi, this.preapreArgs(from, tokenAddress, metaData)));
+    async createSplTokenMetadata(from, tokenAddress, metadata) {
+        const args = await this.preapreArgs(from, tokenAddress, metadata);
+        return this.txInstructionCreator(createMetadataAccountV3(this.umi, args));
     }
 
     /**
      * @param {String} from 
      * @param {String} tokenAddress 
-     * @param {Object} metaData 
+     * @param {Object} metadata 
      * @returns {Object}
      */
-    updateSplTokenMetadata(from, tokenAddress, metaData) {
-        return this.txInstructionCreator(updateMetadataAccountV2(this.umi, this.preapreArgs(from, tokenAddress, metaData)));
+    async updateSplTokenMetadata(from, tokenAddress, metadata) {
+        const args = await this.preapreArgs(from, tokenAddress, metadata);
+        return this.txInstructionCreator(updateMetadataAccountV2(this.umi, args));
     }
 }
 

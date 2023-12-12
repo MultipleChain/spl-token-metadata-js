@@ -1,7 +1,7 @@
 {
   "namespace": "multiplechain",
   "name": "@multiplechain/spl-token-metadata",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Create or update metadata for spl tokens with metaplex standarts.",
   "scripts": {
     "build": "webpack",
